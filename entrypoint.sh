@@ -21,7 +21,7 @@ if [ "$CREATE_SUPERUSER" = "true" ]; then
   echo "🛡️  Checking for superuser..."
 
   # Create superadmin using the updated custom command
-  python manage.py createsuperadmin --email="${DJANGO_SUPERUSER_EMAIL}" --password="${DJANGO_SUPERUSER_PASSWORD}" || true
+  python manage.py createsuperadmin --email="$DJANGO_SUPERUSER_EMAIL" --password="$DJANGO_SUPERUSER_PASSWORD" || true
 fi
 
 echo "🚀 Starting Django dev server..."
