@@ -17,10 +17,6 @@ python manage.py createpublictenant py.saris.info.tz || true
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
 
-echo "🚀 Starting Django dev server..."
-exec python manage.py runserver 0.0.0.0:${API_CONTAINER_PORT}
-
-
 # Auto create superuser if it doesn't exist
 if [ "$CREATE_SUPERUSER" = "true" ]; then
   echo "🛡️  Checking for superuser..."
@@ -37,3 +33,7 @@ else:
     print("✅ Superuser already exists: ${DJANGO_SUPERUSER_EMAIL}")
 END
 fi
+
+echo "🚀 Starting Django dev server..."
+exec python manage.py runserver 0.0.0.0:${API_CONTAINER_PORT}
+
