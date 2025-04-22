@@ -34,9 +34,11 @@ services:
 
       - traefik.http.routers.api.rule=(Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)) && (PathPrefix(`/api/v1`) || PathPrefix(`/api/media`) || PathPrefix(`/schema`))
       - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.media.rule=PathPrefix(`/api/media`)
+      - traefik.http.routers.media.service=media
       - traefik.http.routers.api.tls.certresolver=production
       - traefik.http.routers.api.priority=20
-      - traefik.http.services.api.loadbalancer.server.port=8500
+      - traefik.http.services.api.loadbalancer.server.port=${API_CONTAINER_PORT}
 
       - com.centurylinklabs.watchtower.enable=true
     networks:
