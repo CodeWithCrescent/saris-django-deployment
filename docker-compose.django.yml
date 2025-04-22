@@ -1,0 +1,48 @@
+# version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: saris-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DB_PORT}:${DATABASE_PORT}"
+    networks:
+      - traefik
+
+  web:
+    image: ghcr.io/zalongwa-technologies/saris-python:gen-z
+    container_name: saris-django
+    entrypoint: ["/app/entrypoint.sh"]
+    volumes:
+      - .:/app
+      - media_volume:/app/media
+      - static_volume:/app/staticfiles
+    ports:
+      - "${WEB_PORT}:${WEB_CONTAINER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
+      - traefik.http.routers.saris-django.entrypoints=websecure
+      - traefik.http.routers.saris-django.tls.certresolver=production
+      - traefik.http.services.saris-django.loadbalancer.server.port=${WEB_CONTAINER_PORT}
+    networks:
+      - traefik
+
+volumes:
+  postgres_data:
+  media_volume:
+  static_volume:
+
+networks:
+  traefik:
+    external: true
