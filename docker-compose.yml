@@ -30,12 +30,12 @@ services:
     depends_on:
       - db-genz
     labels:
-      - traefik.enable=true
-      - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
-      - traefik.http.routers.saris-django.entrypoints=websecure
-      - traefik.http.routers.saris-django.tls.certresolver=production
-      - traefik.http.services.saris-django.loadbalancer.server.port=${API_CONTAINER_PORT}
-      - com.centurylinklabs.watchtower.enable=true
+        - traefik.enable=true
+        - traefik.http.routers.saris-backend.rule=Host(`sarisdemo.saris.info.tz`) && PathPrefix(`/api`)
+        - traefik.http.routers.saris-backend.entrypoints=websecure
+        - traefik.http.routers.saris-backend.tls.certresolver=production
+        - traefik.http.services.saris-backend.loadbalancer.server.port=${API_CONTAINER_PORT}
+        - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
 
@@ -55,10 +55,10 @@ services:
       - db-genz
     labels:
       - traefik.enable=true
-      - traefik.http.routers.saris-nextjs.rule=Host(`sarisdemo.saris.info.tz`)
-      - traefik.http.routers.saris-nextjs.entrypoints=websecure
-      - traefik.http.routers.saris-nextjs.tls.certresolver=production
-      - traefik.http.services.saris-nextjs.loadbalancer.server.port=3500
+      - traefik.http.routers.saris-frontend.rule=Host(`sarisdemo.saris.info.tz`) && PathPrefix(`/`)
+      - traefik.http.routers.saris-frontend.entrypoints=websecure
+      - traefik.http.routers.saris-frontend.tls.certresolver=production
+      - traefik.http.services.saris-frontend.loadbalancer.server.port=3500
       - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
