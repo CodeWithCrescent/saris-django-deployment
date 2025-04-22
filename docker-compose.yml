@@ -31,11 +31,13 @@ services:
       - db-genz
     labels:
       - traefik.enable=true
-      - traefik.http.routers.api.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`) && PathPrefix(`/api/v1`, `/schema`)
+
+      - traefik.http.routers.api.rule=(Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)) && (PathPrefix(`/api/v1`) || PathPrefix(`/schema`))
       - traefik.http.routers.api.entrypoints=websecure
       - traefik.http.routers.api.tls.certresolver=production
       - traefik.http.routers.api.priority=10
       - traefik.http.services.api.loadbalancer.server.port=${API_CONTAINER_PORT}
+
       - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
@@ -56,19 +58,21 @@ services:
       - db-genz
     labels:
       - traefik.enable=true
-      - traefik.http.routers.frontend.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`)
+
+      # General frontend routing
+      - traefik.http.routers.frontend.rule=Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)
       - traefik.http.routers.frontend.entrypoints=websecure
       - traefik.http.routers.frontend.tls.certresolver=production
-      - traefik.http.routers.frontend.middlewares=strip-next-auth
       - traefik.http.services.frontend.loadbalancer.server.port=3500
 
-      # Route just for NextAuth
-      - traefik.http.routers.nextauth.rule=Host(`sarisdemo.saris.info.tz`) && PathPrefix(`/api/auth`)
-      - traefik.http.routers.frontend.priority=20
+      # Special router just for next-auth endpoints
+      - traefik.http.routers.nextauth.rule=(Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)) && PathPrefix(`/api/auth`)
       - traefik.http.routers.nextauth.entrypoints=websecure
       - traefik.http.routers.nextauth.tls.certresolver=production
+      - traefik.http.routers.nextauth.priority=20
       - traefik.http.services.nextauth.loadbalancer.server.port=3500
 
+      # Watchtower
       - com.centurylinklabs.watchtower.enable=true
 
     networks:
