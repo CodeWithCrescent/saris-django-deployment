@@ -11,7 +11,7 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
-      - "${DB_PORT}:${DATABASE_PORT}"
+      - "${DATABASE_PORT}:5432"
     networks:
       - traefik
 
