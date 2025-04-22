@@ -36,7 +36,7 @@ services:
       - traefik.http.routers.api.entrypoints=websecure
       - traefik.http.routers.api.tls.certresolver=production
       - traefik.http.routers.api.priority=20
-      - traefik.http.services.api.loadbalancer.server.port=${API_CONTAINER_PORT}
+      - traefik.http.services.api.loadbalancer.server.port=8500
 
       - com.centurylinklabs.watchtower.enable=true
     networks:
@@ -63,7 +63,7 @@ services:
       - traefik.http.routers.frontend.rule=Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)
       - traefik.http.routers.frontend.entrypoints=websecure
       - traefik.http.routers.frontend.tls.certresolver=production
-      - traefik.http.routers.api.priority=10
+      - traefik.http.routers.frontend.priority=10
       - traefik.http.services.frontend.loadbalancer.server.port=3500
 
       # Watchtower
