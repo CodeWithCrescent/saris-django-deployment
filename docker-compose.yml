@@ -61,13 +61,13 @@ services:
       - traefik.http.routers.frontend.tls.certresolver=production
       - traefik.http.routers.frontend.middlewares=strip-next-auth
       - traefik.http.routers.frontend.priority=20
-      - traefik.http.services.frontend.loadbalancer.server.port=${API_CONTAINER_PORT}
+      - traefik.http.services.frontend.loadbalancer.server.port=3500
 
       # Route just for NextAuth
       - traefik.http.routers.nextauth.rule=Host(`sarisdemo.saris.info.tz`) && PathPrefix(`/api/auth`)
       - traefik.http.routers.nextauth.entrypoints=websecure
       - traefik.http.routers.nextauth.tls.certresolver=production
-      - traefik.http.services.nextauth.loadbalancer.server.port=${API_CONTAINER_PORT}
+      - traefik.http.services.nextauth.loadbalancer.server.port=3500
 
       - com.centurylinklabs.watchtower.enable=true
 
