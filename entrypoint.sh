@@ -12,7 +12,7 @@ python manage.py migrate_schemas --shared
 
 echo "🏢 Creating public tenant (if not exists)..."
 # python manage.py createpublictenant localhost || true
-python manage.py createpublictenant py.saris.info.tz || true
+python manage.py createpublictenant sarisdemo.saris.info.tz || true
 
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
