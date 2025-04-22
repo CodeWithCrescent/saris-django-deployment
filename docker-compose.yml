@@ -1,4 +1,5 @@
-version: '3.9'
+# version: '3.9'
+
 services:
   db-genz:
     image: postgres:15
@@ -29,21 +30,12 @@ services:
     depends_on:
       - db-genz
     labels:
-      - "traefik.enable=true"
-      # Two separate routes for different domain patterns
-      - "traefik.http.routers.saris-backend-main.rule=Host(`${DEFAULT_TENANT_DOMAIN}`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.saris-backend-main.entrypoints=websecure"
-      - "traefik.http.routers.saris-backend-main.tls.certresolver=production"
-      - "traefik.http.services.saris-backend-main.loadbalancer.server.port=${API_CONTAINER_PORT}"
-      
-      # For tenant subdomains
-      - "traefik.http.routers.saris-backend-tenants.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.saris.info.tz`) && PathPrefix(`/api`)"
-      - "traefik.http.routers.saris-backend-tenants.priority=200"
-      - "traefik.http.routers.saris-backend-tenants.entrypoints=websecure"
-      - "traefik.http.routers.saris-backend-tenants.tls.certresolver=production"
-      - "traefik.http.services.saris-backend-tenants.loadbalancer.server.port=${API_CONTAINER_PORT}"
-      
-      - "com.centurylinklabs.watchtower.enable=true"
+      - traefik.enable=true
+      - traefik.http.routers.api.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`) && PathPrefix(`/api`, `/schema`)
+      - traefik.http.routers.api.entrypoints=websecure
+      - traefik.http.routers.api.tls.certresolver=production
+      - traefik.http.services.api.loadbalancer.server.port=${API_CONTAINER_PORT}
+      - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
 
@@ -62,21 +54,13 @@ services:
       - api
       - db-genz
     labels:
-      - "traefik.enable=true"
-      # Two separate routes for different domain patterns
-      - "traefik.http.routers.saris-frontend-main.rule=Host(`${DEFAULT_TENANT_DOMAIN}`) && !PathPrefix(`/api`)"
-      - "traefik.http.routers.saris-frontend-main.entrypoints=websecure"
-      - "traefik.http.routers.saris-frontend-main.tls.certresolver=production"
-      - "traefik.http.services.saris-frontend-main.loadbalancer.server.port=3500"
-      
-      # For tenant subdomains
-      - "traefik.http.routers.saris-frontend-tenants.rule=HostRegexp(`{subdomain:[a-z0-9-]+}.saris.info.tz`) && !PathPrefix(`/api`)"
-      - "traefik.http.routers.saris-frontend-tenants.priority=100"
-      - "traefik.http.routers.saris-frontend-tenants.entrypoints=websecure"
-      - "traefik.http.routers.saris-frontend-tenants.tls.certresolver=production"
-      - "traefik.http.services.saris-frontend-tenants.loadbalancer.server.port=3500"
-      
-      - "com.centurylinklabs.watchtower.enable=true"
+      - traefik.enable=true
+      - traefik.http.routers.frontend.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`)
+      - traefik.http.routers.frontend.entrypoints=websecure
+      - traefik.http.routers.frontend.tls.certresolver=production
+      - traefik.http.services.frontend.loadbalancer.server.port=3500
+      - com.centurylinklabs.watchtower.enable=true
+
     networks:
       - traefik
 
