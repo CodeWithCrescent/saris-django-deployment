@@ -44,10 +44,10 @@ services:
     restart: unless-stopped
     ports:
       - "${NEXT_PUBLIC_PORT:-3500}:3500"
-    volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+    # volumes:
+    #   # - .:/app
+    #   - /app/node_modules
+    #   - /app/.next
     env_file:
       - .env
     environment:
