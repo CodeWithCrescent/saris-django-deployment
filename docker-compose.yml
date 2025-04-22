@@ -31,7 +31,7 @@ services:
       - db-genz
     labels:
       - traefik.enable=true
-      - traefik.http.routers.api.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`) && PathPrefix(`/api`, `/schema`)
+      - traefik.http.routers.api.rule=Host(`sarisdemo.saris.info.tz`, `py.saris.info.tz`) && PathPrefix(`/api/v1`, `/schema`)
       - traefik.http.routers.api.entrypoints=websecure
       - traefik.http.routers.api.tls.certresolver=production
       - traefik.http.routers.api.priority=10
