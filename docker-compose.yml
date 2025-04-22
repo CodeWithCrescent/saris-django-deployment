@@ -1,0 +1,75 @@
+# version: '3.9'
+
+services:
+  db:
+    image: postgres:15
+    container_name: saris-db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DB_PORT}:${DATABASE_PORT}"
+    # networks:
+    #   - traefik
+
+  api:
+    image: ghcr.io/zalongwa-technologies/saris-python:gen-z
+    container_name: saris-django
+    entrypoint: ["/app/entrypoint.sh"]
+    volumes:
+      - ./entrypoint.sh:/app/entrypoint.sh
+      - media_volume:/app/media
+      - static_volume:/app/staticfiles
+    ports:
+      - "${API_PORT}:${API_CONTAINER_PORT}"
+    env_file:
+      - .env
+    depends_on:
+      - db
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
+    #   - traefik.http.routers.saris-django.entrypoints=websecure
+    #   - traefik.http.routers.saris-django.tls.certresolver=production
+    #   - traefik.http.services.saris-django.loadbalancer.server.port=${WEB_CONTAINER_PORT}
+    # networks:
+    #   - traefik
+
+  nextjs:
+    image: ghcr.io/zalongwa-technologies/saris-react-frontend:new
+    container_name: saris-nextjs
+    restart: unless-stopped
+    ports:
+      - "${NEXT_PUBLIC_PORT:-3500}:3500"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true
+    depends_on:
+      - api
+      - db
+    # labels:
+    #   - traefik.enable=true
+    #   - traefik.http.routers.saris-nextjs.rule=Host(`sarisdemo.saris.info.tz`)
+    #   - traefik.http.routers.saris-nextjs.entrypoints=websecure
+    #   - traefik.http.routers.saris-nextjs.tls.certresolver=production
+    #   - traefik.http.services.saris-nextjs.loadbalancer.server.port=3500
+    # networks:
+    #   - traefik
+
+volumes:
+  postgres_data:
+  media_volume:
+  static_volume:
+
+# networks:
+#   traefik:
+#     external: true
