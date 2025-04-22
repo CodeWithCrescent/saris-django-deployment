@@ -29,14 +29,14 @@ services:
       - .env
     depends_on:
       - db
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
-    #   - traefik.http.routers.saris-django.entrypoints=websecure
-    #   - traefik.http.routers.saris-django.tls.certresolver=production
-    #   - traefik.http.services.saris-django.loadbalancer.server.port=${WEB_CONTAINER_PORT}
-    # networks:
-    #   - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
+      - traefik.http.routers.saris-django.entrypoints=websecure
+      - traefik.http.routers.saris-django.tls.certresolver=production
+      - traefik.http.services.saris-django.loadbalancer.server.port=${API_CONTAINER_PORT}
+    networks:
+      - traefik
 
   nextjs:
     image: ghcr.io/zalongwa-technologies/saris-react-frontend:new
@@ -56,20 +56,20 @@ services:
     depends_on:
       - api
       - db
-    # labels:
-    #   - traefik.enable=true
-    #   - traefik.http.routers.saris-nextjs.rule=Host(`sarisdemo.saris.info.tz`)
-    #   - traefik.http.routers.saris-nextjs.entrypoints=websecure
-    #   - traefik.http.routers.saris-nextjs.tls.certresolver=production
-    #   - traefik.http.services.saris-nextjs.loadbalancer.server.port=3500
-    # networks:
-    #   - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.saris-nextjs.rule=Host(`sarisdemo.saris.info.tz`)
+      - traefik.http.routers.saris-nextjs.entrypoints=websecure
+      - traefik.http.routers.saris-nextjs.tls.certresolver=production
+      - traefik.http.services.saris-nextjs.loadbalancer.server.port=3500
+    networks:
+      - traefik
 
 volumes:
   postgres_data:
   media_volume:
   static_volume:
 
-# networks:
-#   traefik:
-#     external: true
+networks:
+  traefik:
+    external: true
