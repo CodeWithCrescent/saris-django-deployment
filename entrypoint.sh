@@ -11,24 +11,22 @@ echo "⚙️ Running shared migrations..."
 python manage.py migrate_schemas --shared
 
 echo "🏢 Creating public tenant (if not exists)..."
-# python manage.py createpublictenant localhost || true
 python manage.py createpublictenant sarisdemo.saris.info.tz || true
 
 echo "📦 Collecting static files..."
 python manage.py collectstatic --noinput
 
-# Auto create superuser if it doesn't exist
+# Auto create superadmin using custom command
 if [ "$CREATE_SUPERUSER" = "true" ]; then
   echo "🛡️  Checking for superuser..."
   python manage.py shell << END
-from django.contrib.auth import get_user_model
-User = get_user_model()
+from uaa.models import User
 if not User.objects.filter(email="${DJANGO_SUPERUSER_EMAIL}").exists():
-    print("🔑 Creating superuser ${DJANGO_SUPERUSER_EMAIL}...")
-    User.objects.create_superuser(
-        email="${DJANGO_SUPERUSER_EMAIL}",
-        password="${DJANGO_SUPERUSER_PASSWORD}"
-    )
+    print("🔑 Creating superadmin ${DJANGO_SUPERUSER_EMAIL}...")
+    import subprocess
+    subprocess.run([
+        "python", "manage.py", "createsuperadmin"
+    ], input=f"{DJANGO_SUPERUSER_EMAIL}\n${DJANGO_SUPERUSER_PASSWORD}\n${DJANGO_SUPERUSER_PASSWORD}\n", text=True)
 else:
     print("✅ Superuser already exists: ${DJANGO_SUPERUSER_EMAIL}")
 END
