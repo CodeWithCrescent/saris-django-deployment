@@ -36,4 +36,3 @@ fi
 
 echo "🚀 Starting Django dev server..."
 exec python manage.py runserver 0.0.0.0:${API_CONTAINER_PORT}
-
