@@ -35,6 +35,7 @@ services:
       - traefik.http.routers.saris-django.entrypoints=websecure
       - traefik.http.routers.saris-django.tls.certresolver=production
       - traefik.http.services.saris-django.loadbalancer.server.port=${API_CONTAINER_PORT}
+      - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
 
@@ -44,10 +45,6 @@ services:
     restart: unless-stopped
     ports:
       - "${NEXT_PUBLIC_PORT:-3500}:3500"
-    # volumes:
-    #   # - .:/app
-    #   - /app/node_modules
-    #   - /app/.next
     env_file:
       - .env
     environment:
@@ -62,8 +59,20 @@ services:
       - traefik.http.routers.saris-nextjs.entrypoints=websecure
       - traefik.http.routers.saris-nextjs.tls.certresolver=production
       - traefik.http.services.saris-nextjs.loadbalancer.server.port=3500
+      - com.centurylinklabs.watchtower.enable=true
     networks:
       - traefik
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower__
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json
+    environment:
+      - DOCKER_CONFIG=/
+    command: --cleanup --interval 30 --label-enable
 
 volumes:
   postgres_data:
