@@ -3,7 +3,7 @@
 services:
   db:
     image: postgres:15
-    container_name: saris-db
+    container_name: saris-db-01
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
@@ -12,8 +12,8 @@ services:
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
     ports:
       - "${DB_PORT}:${DATABASE_PORT}"
-    # networks:
-    #   - traefik
+    networks:
+      - traefik
 
   api:
     image: ghcr.io/zalongwa-technologies/saris-python:gen-z
