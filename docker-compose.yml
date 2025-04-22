@@ -63,6 +63,7 @@ services:
       - traefik.http.routers.frontend.rule=Host(`sarisdemo.saris.info.tz`) || Host(`py.saris.info.tz`)
       - traefik.http.routers.frontend.entrypoints=websecure
       - traefik.http.routers.frontend.tls.certresolver=production
+      - traefik.http.routers.frontend.priority=1
       - traefik.http.services.frontend.loadbalancer.server.port=3500
 
       # Special router just for next-auth endpoints
