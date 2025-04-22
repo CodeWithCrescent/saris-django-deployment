@@ -65,7 +65,7 @@ services:
 
   watchtower:
     image: containrrr/watchtower
-    container_name: watchtower
+    container_name: watchtower__
     restart: unless-stopped
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
