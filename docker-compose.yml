@@ -2,18 +2,29 @@
 
 services:
   db-genz:
-    image: postgres:15
-    container_name: saris-db-01
+    image: bitnami/postgresql:15.6.0
+    container_name: saris-db
+    restart: unless-stopped
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/bitnami/postgresql
     environment:
-      POSTGRES_DB: ${DATABASE_NAME}
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      - POSTGRESQL_DATABASE=${DATABASE_NAME}
+      - POSTGRESQL_USERNAME=${DATABASE_USER}
+      - POSTGRESQL_PASSWORD=${DATABASE_PASSWORD}
+      - ALLOW_EMPTY_PASSWORD=no
     ports:
-      - "${DB_PORT}:5432"
+      - "${DB_PORT}:${DATABASE_PORT}"
     networks:
       - traefik
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /opt/bitnami/postgresql/tmp
+    cap_drop:
+      - ALL
+    user: "1001:1001"
 
   api:
     image: ghcr.io/zalongwa-technologies/saris-python:gen-z
