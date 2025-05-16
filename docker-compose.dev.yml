@@ -1,0 +1,32 @@
+name: saris
+
+services:
+  web:
+    container_name: saris_api
+    image: ghcr.io/zalongwa-technologies/saris-python:main
+    command: ['python', 'manage.py', 'runserver', '0.0.0.0:8000']
+    ports:
+      - "${HOST_PORT}:8000"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=db
+    depends_on:
+      - db
+    restart: always
+
+  db:
+    container_name: saris_db
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_HOST_PORT}:5432"
+    volumes:
+      - saris_db_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  saris_db_data:

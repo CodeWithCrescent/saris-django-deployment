@@ -1,0 +1,69 @@
+name: saris
+
+services:
+  web:
+    container_name: saris_api
+    image: ghcr.io/zalongwa-technologies/saris-python:main
+    command: ['python', 'manage.py', 'runserver', '0.0.0.0:8000']
+    volumes:
+      - media_volume:/app/media
+      - static_volume:/app/staticfiles
+    env_file:
+      - .env
+    environment:
+      - DATABASE_HOST=db
+    depends_on:
+      - db-saris
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.saris-python.rule=Host(`py.saris.info.tz`) || Host(`sarisdemo.saris.info.tz`)`)"
+      - "traefik.http.routers.saris-python.entrypoints=websecure"
+      - "traefik.http.routers.saris-python.tls.certresolver=production"
+      - "traefik.http.services.saris-python.loadbalancer.server.port=8000"
+
+      # Watchtower
+      - com.centurylinklabs.watchtower.enable=true
+    networks:
+      - traefik
+      # - internal
+
+  db-saris:
+    container_name: saris_db
+    image: bitnami/postgresql:15.6.0
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - "${DATABASE_HOST_PORT}:5432"
+    volumes:
+      - saris_db_data:/var/lib/postgresql/data
+    restart: always
+    tmpfs:
+      - /tmp
+      - /opt/bitnami/postgresql/tmp
+    networks:
+      - traefik
+    #   - internal
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: watchtower__
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json
+    environment:
+      - DOCKER_CONFIG=/
+    command: --cleanup --interval 30 --label-enable
+
+volumes:
+  saris_db_data:
+  media_volume:
+  static_volume:
+
+networks:
+  traefik:
+    external: true
+  # internal:

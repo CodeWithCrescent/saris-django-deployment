@@ -1,0 +1,12 @@
+# INSTRUCTIONS FOR DEPLOYMENT
+
+Run:
+```bash
+cp .env.example .env
+
+cp docker-compose.prod.yml docker-compose.yml
+
+docker compose build
+
+docker compose up -d
+```

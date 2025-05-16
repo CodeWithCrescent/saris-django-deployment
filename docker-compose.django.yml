@@ -16,7 +16,7 @@ services:
       - traefik
 
   web:
-    image: ghcr.io/zalongwa-technologies/saris-python:gen-z
+    image: ghcr.io/zalongwa-technologies/saris-django-old:gen-z
     container_name: saris-django
     entrypoint: ["/app/entrypoint.sh"]
     volumes:
@@ -31,7 +31,7 @@ services:
       - db
     labels:
       - traefik.enable=true
-      - traefik.http.routers.saris-django.rule=Host(`py.saris.info.tz`)
+      - traefik.http.routers.saris-django.rule=Host(`old.saris.info.tz`)
       - traefik.http.routers.saris-django.entrypoints=websecure
       - traefik.http.routers.saris-django.tls.certresolver=production
       - traefik.http.services.saris-django.loadbalancer.server.port=${WEB_CONTAINER_PORT}
