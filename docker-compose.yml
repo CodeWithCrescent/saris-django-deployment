@@ -1,0 +1,56 @@
+services:
+  saris-web:
+    container_name: saris_api
+    image:  ghcr.io/zalongwa-technologies/saris-python:main
+    command: gunicorn saris.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./static/:/app/staticfiles
+      - ./media:/app/media
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.saris_api.rule=Host(`sarisdemo.saris.info.tz`)"
+      - "traefik.http.routers.saris_api.entrypoints=websecure"
+      - "traefik.http.routers.saris_api.tls.certresolver=myresolver"
+      - "traefik.http.services.saris_api.loadbalancer.server.port=8000"
+      - "com.centurylinklabs.watchtower.enable=true"
+    depends_on:
+      - saris-db
+    networks:
+      - zalongwa
+
+  saris-db:
+    image: postgres:latest
+    container_name: saris_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - ${DATABASE_HOST_PORT}:${DATABASE_PORT}
+    volumes:
+      - saris_db_data:/var/lib/postgresql/data
+    networks:
+      - zalongwa
+    mem_limit: 512m
+    cpus: 0.5
+
+  watchtower:
+    image: containrrr/watchtower
+    container_name: saris_watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ~/.docker/config.json:/config.json
+    environment:
+      - DOCKER_CONFIG=/
+    command: --cleanup --interval 30 --label-enable
+
+networks:
+  zalongwa:
+    external: true
+
+volumes:
+  saris_db_data:

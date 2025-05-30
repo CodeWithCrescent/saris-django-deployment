@@ -1,12 +1,58 @@
 # INSTRUCTIONS FOR DEPLOYMENT
 
-Run:
+Make Sure you create database to existing postgres
+
+```bash
+# ! SKIP THIS BLOCK
+psql -U zalongwa -h localhost -p 5432 postgres
+
+CREATE DATABASE saris_db;
+
+\l
+```
+
+Update `SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS` and Database credentials  in .env
+
 ```bash
 cp .env.example .env
 
-cp docker-compose.prod.yml docker-compose.yml
+docker compose up -d --build
+```
 
-docker compose build
+Setup the Public Tenant
+```bash
+docker exec -it saris_api bash
 
-docker compose up -d
+python manage.py migrate_schemas --shared
+
+python manage.py create_tenant
+# schema name: (enter schema name with no spaces, separate words with underscore)
+# name: (enter tenant name, eg. University of Zalongwa)
+# abbreviation: (enter tenant abbreviation, eg. ZTL)
+# logo: (leave empty, you can update later)
+# address: (can be empty or like Dodoma)
+# status: (1 for active and 0 for inactive)
+
+# -- It will apply migration to the new schema you created --
+
+# domain: (enter domain here, eg. localhost or )
+```
+
+Create a public tenant super user:
+```bash
+python manage.py create_tenant_superuser
+# Enter Tenant Schema: (Enter ? to see list of schemas or enter schema name)
+# Email: (enter super user email)
+# Password: (Enter super user password)
+```
+Open Browser `http://sarisdemo.saris.info.tz/auth/login` or on any domain and port you configured, then you can login as super user.
+
+extra for temporary data backup
+
+```bash
+mkdir fixtures
+docker compose exec saris_api python manage.py dumpdata authy --indent 4 > fixtures/authy.json
+docker compose exec saris_api python manage.py dumpdata institution --indent 4 > fixtures/institution.json
+
+docker compose exec saris_api python manage.py loaddata fixtures/authy.json
 ```
