@@ -4,7 +4,8 @@ services:
     image:  ghcr.io/zalongwa-technologies/saris-python:main
     command: gunicorn saris.wsgi:application --bind 0.0.0.0:8000
     volumes:
-      - ./static/:/app/staticfiles
+      - ./static:/app/static
+      - ./staticfiles:/app/staticfiles
       - ./media:/app/media
     env_file:
       - .env
